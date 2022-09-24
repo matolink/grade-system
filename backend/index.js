@@ -1,16 +1,19 @@
-import express from "express";
+import express from 'express'
 import * as dotenv from 'dotenv'
 dotenv.config()
-import client from './pg_client.js';
+import studentsRoutes from './routes/students.routes.js'
+import databaseRoutes from './routes/database.routes.js'
 
 const app = express()
+app.use(express.json())
 
-app.get('/students', async (req,res) => {
-    const result = await client.query('SELECT 1+1 AS Result')
-    res.json(result)
+app.use('/api',studentsRoutes)
+app.use('/api',databaseRoutes)
+app.use((req,res,next) => {
+    res.status(404)
+    res.json({
+        message: 'endpoint not found'
+    })
 })
 
-// app.post('/students', (req,res) => res.send('hola cami'))
 app.listen(3000)
-
-// 19:00

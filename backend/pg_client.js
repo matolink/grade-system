@@ -3,7 +3,6 @@ import * as dotenv from 'dotenv'
 dotenv.config()
 
 const {Client} = pkg
-console.log(process.env)
 const client = new Client({
     user:process.env.PGUSER,
     host:process.env.PGHOST,
