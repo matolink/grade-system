@@ -1,4 +1,5 @@
 import express from 'express'
+import cors from 'cors'
 import * as dotenv from 'dotenv'
 dotenv.config()
 import studentsRoutes from './routes/students.routes.js'
@@ -11,6 +12,7 @@ import gradesRoutes from './routes/grades.routes.js'
 const app = express()
 app.use(express.json())
 
+app.use(cors())
 app.use('/api',studentsRoutes)
 app.use('/api',databaseRoutes)
 app.use('/api',teachersRoutes)
