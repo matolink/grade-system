@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import Index from './index.jsx'
+import Layout from './Layout.jsx'
+import NoPage from './NoPage.jsx'
 import './App.css'
 // en el app deberia poner el componente de ruteo
 // acá defino qué componente renderear según la ruta en la que estoy navegando
@@ -7,10 +8,11 @@ import './App.css'
 function App() {
   return (
     <BrowserRouter>
-        <Routes>
-            <Route path='/route' element={<Index />}>
-            </Route>
-        </Routes>
+      <Routes>
+        <Route path='/' element={<Layout />}>
+        </Route>
+        <Route path='*' element={<NoPage />} />
+      </Routes>
     </BrowserRouter>
   )
 }
