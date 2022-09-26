@@ -1,10 +1,11 @@
-import { Outlet, Link } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet'
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import { useEffect, useState } from 'react'
 
 export default function Layout() {
+  const navigate = useNavigate()
   const [subjects, setSubjects] = useState([])
   useEffect(() => {
     fetch('http://localhost:3000/api/subjects')
@@ -16,7 +17,12 @@ export default function Layout() {
   })
   const handleSubjectIdValue = (event) => {
     setValues({ ...values, id_subject: event.target.value })
-        console.log(values)
+    console.log(values)
+  }
+
+  const handleRadioButtonCheck = (event) => {
+        console.log(event.target.id)
+        navigate(`/${event.target.id}`)
   }
   return (
     <div>
@@ -43,18 +49,20 @@ export default function Layout() {
           {['radio'].map((type) => (
             <div key={`inline-${type}`} className='mb-3'>
               <Form.Check
+                onClick={handleRadioButtonCheck}
                 inline
                 label='por RUT'
                 name='group1'
                 type={type}
-                id={`inline-${type}-1`}
+                id={'byrut'}
               />
               <Form.Check
+                onClick={handleRadioButtonCheck}
                 inline
                 label='por Curso Entero'
                 name='group1'
                 type={type}
-                id={`inline-${type}-2`}
+                id={'bysubject'}
               />
             </div>
           ))}
@@ -62,8 +70,8 @@ export default function Layout() {
             Submit
           </Button>
         </Form>
+        <Outlet />
       </div>
-      <Outlet />
     </div>
   )
 }

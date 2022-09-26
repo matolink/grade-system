@@ -1,4 +1,3 @@
-import logo from '../logo.svg'
 import { useEffect, useState } from 'react'
 export default function Index() {
   const [subjects, setSubjects] = useState([])
