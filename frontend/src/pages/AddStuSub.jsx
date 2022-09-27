@@ -28,7 +28,6 @@ export default function AddStuSub() {
           {subjects.map((element) => (
             <option key={element.id} value={element.id}>
               {element.name}
-              {console.log(values)}
             </option>
           ))}
         </Form.Select>
@@ -42,7 +41,6 @@ export default function AddStuSub() {
           {students.map((element) => (
             <option key={element.rut} value={element.rut}>
               {element.name}
-              {console.log(values)}
             </option>
           ))}
         </Form.Select>
