@@ -10,6 +10,7 @@ import AddStudent from './AddStudent.jsx'
 import AddStuSub from './AddStuSub.jsx'
 import AddSubject from './AddSubject.jsx'
 import AddGrade from './AddGrade.jsx'
+import AddExam from './AddExam.jsx'
 // en el app deberia poner el componente de ruteo
 // acá defino qué componente renderear según la ruta en la que estoy navegando
 
@@ -27,6 +28,7 @@ function App() {
           <Route path='addstusub' element={<AddStuSub />} />
           <Route path='addsubject' element={<AddSubject />} />
           <Route path='addgrade' element={<AddGrade />} />
+          <Route path='addexam' element={<AddExam />} />
         </Route>
         <Route path='*' element={<NoPage />} />
       </Routes>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Form } from 'react-bootstrap'
 import { Outlet, useNavigate } from 'react-router-dom'
+import { Helmet } from 'react-helmet'
 
 export default function PostToDb() {
   // const [post, setPost] = useState([])
@@ -16,6 +17,9 @@ export default function PostToDb() {
   }
   return (
     <div>
+      <Helmet>
+        <title>matolink</title>
+      </Helmet>
       <Form>
         {['radio'].map((type) => (
           <div key={`inline-${type}`} className='mb-3'>
@@ -58,6 +62,14 @@ export default function PostToDb() {
               name='group1'
               type={type}
               id={'addgrade'}
+            />
+            <Form.Check
+              onClick={handleRadioButtonCheck}
+              inline
+              label='Añadir Examen'
+              name='group1'
+              type={type}
+              id={'addexam'}
             />
           </div>
         ))}

@@ -1,7 +1,6 @@
 import { Outlet, useNavigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet'
 import Form from 'react-bootstrap/Form'
-import Button from 'react-bootstrap/Button'
 import { useEffect, useState } from 'react'
 
 export default function Layout() {
@@ -66,9 +65,6 @@ export default function Layout() {
               />
             </div>
           ))}
-          <Button variant='primary' type='submit' size='lg'>
-            Submit
-          </Button>
         </Form>
         <Outlet />
       </div>
