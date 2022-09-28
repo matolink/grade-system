@@ -36,24 +36,47 @@ export default function ByRut() {
       .then((json) => setExam(json))
     setShow(true)
   }
-  let grades_copy = [...grades]
-  let sum = 0
-  grades.map((e) => {
-    sum = sum + (e.grade || 0)
-  })
-  let average = sum / grades.length
-  let calcs = {}
-  calcs.average = average
-  if (average > 60) {
-    calcs.isexam = 'No'
-  } else {
-    calcs.isexam = 'Si'
+  // let sum = 0
+  // grades.map((e) => {
+  //   sum = sum + (e.grade || 0)
+  // })
+  // let average = sum / grades.length
+  // let calcs = {}
+  // calcs.average = average
+  // if (average > 60) {
+  //   calcs.isexam = 'No'
+  // } else {
+  //   calcs.isexam = 'Si'
+  // }
+  // calcs.exam = exam[0]?.grade || 0
+  // calcs.final = (calcs.average + calcs.exam) / 2
+  function calcsFunction(grades, exam) {
+    let grades_copy = [...grades]
+    let sum = 0
+    grades.map((e) => {
+      sum = sum + (e.grade || 0)
+    })
+    let average = sum / grades.length
+    let calcs = {}
+    calcs.average = average
+    if (average > 60) {
+      calcs.isexam = 'No'
+    } else {
+      calcs.isexam = 'Si'
+    }
+    calcs.exam = exam[0]?.grade || 0
+    calcs.final = (calcs.average + calcs.exam) / 2
+    while (grades_copy.length < 4) {
+      grades_copy.push({})
+    }
+    return {
+      grades: grades_copy,
+      calcs: calcs,
+      id_student: grades[0]?.rut_student || 0,
+    }
   }
-  calcs.exam = exam[0]?.grade || 0
-  calcs.final = (calcs.average + calcs.exam) / 2
-  while (grades_copy.length < 4) {
-    grades_copy.push({})
-  }
+  let calcs = calcsFunction(grades, exam)
+  console.log(calcs)
   return (
     <div>
       <Form.Label>Curso</Form.Label>
@@ -96,25 +119,13 @@ export default function ByRut() {
           </thead>
           <tbody>
             <tr>
-              {grades_copy.map((element) => (
+              {calcs.grades.map((element) => (
                 <td key={element.id}>{element.grade}</td>
               ))}
-              <td>{calcs ? calcs.average : null}</td>
-              <td>{calcs ? calcs.isexam : null}</td>
-              <td>{calcs ? calcs.exam : null}</td>
-              <td>{calcs ? calcs.final : null}</td>
-              {/* {calcs.map((element)=>( */}
-              {/*  <td key={element.id}>{element.average}</td> */}
-              {/* ))} */}
-              {/* {calcs.map((element)=>( */}
-              {/*  <td key={element.id}>{element.isexam}</td> */}
-              {/* ))} */}
-              {/* {calcs.map((element)=>( */}
-              {/*  <td key={element.id}>{element.exam}</td> */}
-              {/* ))} */}
-              {/* {calcs.map((element)=>( */}
-              {/*  <td key={element.id}>{element.final}</td> */}
-              {/* ))} */}
+              <td>{calcs ? calcs.calcs.average : null}</td>
+              <td>{calcs ? calcs.calcs.isexam : null}</td>
+              <td>{calcs ? calcs.calcs.exam : null}</td>
+              <td>{calcs ? calcs.calcs.final : null}</td>
             </tr>
           </tbody>
         </Table>

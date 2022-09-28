@@ -13,6 +13,29 @@ export const getStudents = async (req, res) => {
   }
 }
 
+export const getStudentBySub = async (req, res) => {
+  let text = 'SELECT student.name, student.rut FROM student INNER JOIN student_subject ON student.rut = student_subject.rut_student WHERE student_subject.id_subject = $1'
+  let value = [req.params.id_sub]
+  try {
+    const result = await client.query(text, value)
+    if (result.rows.length <= 0) {
+      res.status(404)
+      res.json({
+        message: 'no Students here',
+        variant: 'danger',
+      })
+    } else {
+      res.json(result.rows)
+    }
+  } catch (error) {
+    res.status(500)
+    res.json({
+      message: 'internal server error',
+      variant: 'danger',
+    })
+  }
+}
+
 export const getStudent = async (req, res) => {
   let text = 'SELECT * FROM student WHERE rut = $1'
   let value = [req.params.rut]

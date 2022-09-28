@@ -1,6 +1,6 @@
 GET http://localhost:3000/api/grades/byid/1/34859243-3
 
-GET http://localhost:3000/api/exams/
+GET http://localhost:3000/api/students/bysub/1
 
 GET http://localhost:3000/api/exams/byid/2/34859243-3
 
