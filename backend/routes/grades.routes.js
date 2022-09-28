@@ -3,8 +3,8 @@ import { getGradesByRut, getGradesBySubjectId, postGrade } from '../controllers/
 
 const router = Router()
 
-router.get('/grades/byid/:id', getGradesBySubjectId)
-router.get('/grades/byrut/:rut', getGradesByRut)
+router.get('/grades/byid/:id_subject/:rut_student', getGradesBySubjectId)
+router.get('/grades/byrut/:rut_student', getGradesByRut)
 router.post('/grades', postGrade)
 
 export default router

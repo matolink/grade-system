@@ -5,10 +5,8 @@ import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 export default function ByRut(...props) {
   const [show, setShow] = useState(false)
-  const [grades, setGrades] = useState()
-  const [exam, setExam] = useState()
+  const [grades, setGrades] = useState(false)
   const [subjects, setSubjects] = useState([])
-    let calcs
   useEffect(() => {
     fetch('http://localhost:3000/api/subjects')
       .then((res) => res.json())
@@ -24,40 +22,24 @@ export default function ByRut(...props) {
   const handleStudentRut = (event) => {
     setValues({ ...values, rut_student: event.target.value })
   }
-  async function request(event) {
+  async function request(event){
     event.preventDefault()
-    setShow(true)
-    fetch(
+    await fetch(
       `http://localhost:3000/api/grades/byid/${values.id_subject}/${values.rut_student}`
     )
       .then((res) => res.json())
       .then((json) => setGrades(json))
-    console.log('grades',grades)
-    let sum = 0
-    grades.map((e) => {
-      sum = sum + e.grade
-    })
-    let average = sum / grades.length
-    let calcs = {}
-    calcs.average = average
-    if (average < 60) {
-      calcs.isexam = 'No'
-    } else {
-      calcs.isexam = 'Si'
-    }
-    await fetch(
-      `http://localhost:3000/api/exams/byid/${values.id_subject}/${values.rut_student}`
-    )
-      .then((res) => res.json())
-      .then((json) => setExam(json))
-    console.log('exam',exam)
-    calcs.exam = exam[0].grade
-    calcs.final = (calcs.average + calcs.exam)/2
+        console.log(grades)
+    // console.log(grades)
+    let suma = 0
+    grades.map((e)=>{suma= suma + e.grade})
+    let promedio = (suma/grades.length)
+        console.log(promedio)
+    setShow(true)
   }
   return (
     <div>
       <Form.Label>Curso</Form.Label>
-      <Form.Label>111111111-1</Form.Label>
       <Form.Select onChange={handleSubjectIdValue} defaultValue={0}>
         <option disabled value={0}>
           Selecciona una opcion
@@ -99,12 +81,7 @@ export default function ByRut(...props) {
               {grades.map((element) => (
                 <td key={element.id}>{element.grade}</td>
               ))}
-              {calcs.map((element) => (
-                <td key={element.isexam}>{element.isexam}</td>
-                // <td key={element.id}>{element.grade}</td>
-                // <td key={element.id}>{element.grade}</td>
-                // <td key={element.id}>{element.grade}</td>
-              ))}
+            <td>{}</td>
             </tr>
           </tbody>
         </Table>

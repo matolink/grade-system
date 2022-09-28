@@ -1,8 +1,8 @@
-GET http://localhost:3000/api/grades/byrut/5430991-1
+GET http://localhost:3000/api/grades/byid/1/34859243-3
 
-GET http://localhost:3000/api/subjects
+GET http://localhost:3000/api/exams/
 
-GET http://localhost:3000/fdslakjfdlskjfdsa
+GET http://localhost:3000/api/exams/byid/2/34859243-3
 
 GET http://localhost:3000/api/subjects/1
 
@@ -10,11 +10,12 @@ GET http://localhost:3000/api/teachers/fdflsdkjfa
 
 POST http://localhost:3000/api/createtables
 
-POST http://localhost:3000/api/grades
-Content-type: application/json
-
+POST http://localhost:3000/api/exams
+        Accept: application/json,
+        Content-Type: application/json
 {
-    "id":"1",
-    "rut":"5430991-1",
-    "grade":"99"
+    "rut_student":"34859243-3",
+    "id_subject":"1",
+    "grade":"20",
+    "exam":"true",
 }
