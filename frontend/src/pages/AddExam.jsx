@@ -72,9 +72,6 @@ export default function AddGrade() {
       .then((json) => setMessage(json))
     setShow(true)
   }
-    const debCon = (event) => {
-    event.preventDefault()
-    }
   return (
     <div>
       {show ? (
@@ -121,9 +118,6 @@ export default function AddGrade() {
         </Form.Group>{' '}
         <Button variant='primary' type='submit' onClick={request}>
           Submit
-        </Button>
-        <Button variant='primary' type='' onClick={debCon}>
-          Debug console
         </Button>
       </Form>
     </div>

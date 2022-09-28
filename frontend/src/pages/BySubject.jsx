@@ -60,8 +60,6 @@ export default function BySubject() {
   const [students, setStudents] = useState([])
 
   // end bring students
-  const [grades, setGrades] = useState([])
-  const [exam, setExam] = useState([])
 
   function calcsFunction(grades, exam) {
     let grades_copy = [...grades]
@@ -72,13 +70,19 @@ export default function BySubject() {
     let average = sum / grades.length
     let calcs = {}
     calcs.average = average
-    if (average > 60) {
+    if (calcs.average > 60) {
       calcs.isexam = 'No'
     } else {
       calcs.isexam = 'Si'
     }
     calcs.exam = exam[0]?.grade || 0
-    calcs.final = (calcs.average + calcs.exam) / 2
+    if (calcs.exam === 0) {
+      calcs.final = 0
+    } else if (average > 60) {
+      calcs.final = calcs.average
+    } else {
+      calcs.final = (calcs.average + calcs.exam) / 2
+    }
     while (grades_copy.length < 4) {
       grades_copy.push({})
     }
@@ -91,29 +95,73 @@ export default function BySubject() {
 
   const [finals, setFinals] = useState([])
 
-let finals_prev = []
+  let finals_prev = []
   async function request() {
-    console.log(finals)
-    students.map(async (e) => {
-      // finals.name = e.name
-      await fetch(
-        `http://localhost:3000/api/grades/byid/${values.id_subject}/${e.rut}`
-      )
-        .then((res) => res.json())
-        .then((json) => setGrades(json))
-      console.log('fetch1',grades)
-      await fetch(
-        `http://localhost:3000/api/exams/byid/${values.id_subject}/${e.rut}`
-      )
-        .then((res) => res.json())
-        .then((json) => setExam(json))
-      console.log('fetch2',grades)
-
-      finals_prev.push({ grades: calcsFunction(grades, exam), name: e.name })
-    console.log(finals)
+    let gradesResult = await Promise.all(
+      students.map(async (s) => {
+        return await Promise.allSettled([
+          fetch(
+            `http://localhost:3000/api/grades/byid/${values.id_subject}/${s.rut}`
+          ).then((res) => res.json()),
+          fetch(
+            `http://localhost:3000/api/exams/byid/${values.id_subject}/${s.rut}`
+          ).then((res) => res.json()),
+          s.name,
+        ])
+      })
+    )
+    gradesResult = gradesResult.map((e) => {
+      return {
+        grades: e[0].value,
+        exam: e[1].value,
+        name: e[2].value,
+      }
     })
-    setFinals(finals_prev)
+    gradesResult = gradesResult.map((g) => ({
+      grades: calcsFunction(g.grades, g.exam),
+      name: g.name,
+    }))
+    setFinals(gradesResult)
+
+    // students.map((e) => {
+    //   console.log(grades)
+    //   // finals.name = e.name
+    //   // let grades
+    //   // fetch(
+    //   //   `http://localhost:3000/api/grades/byid/${values.id_subject}/${e.rut}`
+    //   // )
+    //   //   .then((res) => res.json())
+    //   //   .then((json) => {
+    //   //     grades = json
+    //   //   })
+    //   //   .then(() => console.log('entrohastadespuesdegrades'))
+    //   // let exam
+    //   // fetch(
+    //   //   `http://localhost:3000/api/exams/byid/${values.id_subject}/${e.rut}`
+    //   // )
+    //   //   .then((res) => res.json())
+    //   //   .then((json) => {
+    //   //     exam = json
+    //   //   })
+    //   finals_prev.push({ grades: calcsFunction(grades, exam), name: e.name })
+    // })
+    // setFinals(finals_prev)
+    // console.log(finals)
+    // console.log(finals_prev)
   }
+
+  let unapproved = finals.filter((g) => {
+    if (g.grades.calcs.final < 40) {
+      return true
+    }
+  })
+
+  let approved = finals.filter((g) => {
+    if (g.grades.calcs.final >= 40) {
+      return true
+    }
+  })
+
   return (
     <div>
       <Form.Label>Curso</Form.Label>
@@ -129,8 +177,8 @@ let finals_prev = []
       </Form.Select>
       <br />
       <Accordion>
-        <Accordion.Item eventKey='0'>
-          <Accordion.Header onClick={request}>
+        <Accordion.Item eventKey='0' onClick={request}>
+          <Accordion.Header >
             Todos los alumnos
           </Accordion.Header>
           <Accordion.Body>
@@ -195,38 +243,30 @@ let finals_prev = []
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  {/* {grades.map((element) => ( */}
-                  {/*   <td key={element.id}>{element.grade}</td> */}
-                  {/* ))} */}
-                  <td>1</td>
-                  <td>Mark</td>
-                  <td>Otto</td>
-                  <td>Otto</td>
-                  <td>@mdo</td>
-                </tr>
-                <tr>
-                  <td>1</td>
-                  <td>Mark</td>
-                  <td>Otto</td>
-                  <td>@mdo</td>
-                  <td>1</td>
-                  <td>Mark</td>
-                  <td>Otto</td>
-                  <td>Otto</td>
-                  <td>@mdo</td>
-                </tr>
-                <tr>
-                  <td>1</td>
-                  <td>Mark</td>
-                  <td>Otto</td>
-                  <td>@mdo</td>
-                  <td>1</td>
-                  <td>Mark</td>
-                  <td>Otto</td>
-                  <td>Otto</td>
-                  <td>@mdo</td>
-                </tr>
+                {approved.map((element) => (
+                  <tr>
+                    <td>{element.name}</td>
+                    {element.grades.grades.map((gra) => (
+                      <td>{gra.grade}</td>
+                    ))}
+                    <td>
+                      {element.grades.calcs
+                        ? element.grades.calcs.average
+                        : null}
+                    </td>
+                    <td>
+                      {element.grades.calcs
+                        ? element.grades.calcs.isexam
+                        : null}
+                    </td>
+                    <td>
+                      {element.grades.calcs ? element.grades.calcs.exam : null}
+                    </td>
+                    <td>
+                      {element.grades.calcs ? element.grades.calcs.final : null}
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </Table>
           </Accordion.Body>
@@ -249,39 +289,30 @@ let finals_prev = []
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>Mark</td>
-                  <td>Otto</td>
-                  <td>@mdo</td>
-                  <td>1</td>
-                  <td>Mark</td>
-                  <td>Otto</td>
-                  <td>Otto</td>
-                  <td>@mdo</td>
-                </tr>
-                <tr>
-                  <td>1</td>
-                  <td>Mark</td>
-                  <td>Otto</td>
-                  <td>@mdo</td>
-                  <td>1</td>
-                  <td>Mark</td>
-                  <td>Otto</td>
-                  <td>Otto</td>
-                  <td>@mdo</td>
-                </tr>
-                <tr>
-                  <td>1</td>
-                  <td>Mark</td>
-                  <td>Otto</td>
-                  <td>@mdo</td>
-                  <td>1</td>
-                  <td>Mark</td>
-                  <td>Otto</td>
-                  <td>Otto</td>
-                  <td>@mdo</td>
-                </tr>
+                {unapproved.map((element) => (
+                  <tr>
+                    <td>{element.name}</td>
+                    {element.grades.grades.map((gra) => (
+                      <td>{gra.grade}</td>
+                    ))}
+                    <td>
+                      {element.grades.calcs
+                        ? element.grades.calcs.average
+                        : null}
+                    </td>
+                    <td>
+                      {element.grades.calcs
+                        ? element.grades.calcs.isexam
+                        : null}
+                    </td>
+                    <td>
+                      {element.grades.calcs ? element.grades.calcs.exam : null}
+                    </td>
+                    <td>
+                      {element.grades.calcs ? element.grades.calcs.final : null}
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </Table>
           </Accordion.Body>
