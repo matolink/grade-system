@@ -1,14 +1,12 @@
 import Table from 'react-bootstrap/Table'
-import Alert from 'react-bootstrap/Alert'
 import { useEffect, useState } from 'react'
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
-export default function ByRut(...props) {
+export default function ByRut() {
   const [show, setShow] = useState(false)
-  const [grades, setGrades] = useState()
-  const [exam, setExam] = useState()
+  const [grades, setGrades] = useState([])
+  const [exam, setExam] = useState([])
   const [subjects, setSubjects] = useState([])
-    let calcs
   useEffect(() => {
     fetch('http://localhost:3000/api/subjects')
       .then((res) => res.json())
@@ -26,33 +24,35 @@ export default function ByRut(...props) {
   }
   async function request(event) {
     event.preventDefault()
-    setShow(true)
-    fetch(
+    await fetch(
       `http://localhost:3000/api/grades/byid/${values.id_subject}/${values.rut_student}`
     )
       .then((res) => res.json())
       .then((json) => setGrades(json))
-    console.log('grades',grades)
-    let sum = 0
-    grades.map((e) => {
-      sum = sum + e.grade
-    })
-    let average = sum / grades.length
-    let calcs = {}
-    calcs.average = average
-    if (average < 60) {
-      calcs.isexam = 'No'
-    } else {
-      calcs.isexam = 'Si'
-    }
     await fetch(
       `http://localhost:3000/api/exams/byid/${values.id_subject}/${values.rut_student}`
     )
       .then((res) => res.json())
       .then((json) => setExam(json))
-    console.log('exam',exam)
-    calcs.exam = exam[0].grade
-    calcs.final = (calcs.average + calcs.exam)/2
+    setShow(true)
+  }
+  let grades_copy = [...grades]
+  let sum = 0
+  grades.map((e) => {
+    sum = sum + (e.grade || 0)
+  })
+  let average = sum / grades.length
+  let calcs = {}
+  calcs.average = average
+  if (average > 60) {
+    calcs.isexam = 'No'
+  } else {
+    calcs.isexam = 'Si'
+  }
+  calcs.exam = exam[0]?.grade || 0
+  calcs.final = (calcs.average + calcs.exam) / 2
+  while (grades_copy.length < 4) {
+    grades_copy.push({})
   }
   return (
     <div>
@@ -96,15 +96,25 @@ export default function ByRut(...props) {
           </thead>
           <tbody>
             <tr>
-              {grades.map((element) => (
+              {grades_copy.map((element) => (
                 <td key={element.id}>{element.grade}</td>
               ))}
-              {calcs.map((element) => (
-                <td key={element.isexam}>{element.isexam}</td>
-                // <td key={element.id}>{element.grade}</td>
-                // <td key={element.id}>{element.grade}</td>
-                // <td key={element.id}>{element.grade}</td>
-              ))}
+              <td>{calcs ? calcs.average : null}</td>
+              <td>{calcs ? calcs.isexam : null}</td>
+              <td>{calcs ? calcs.exam : null}</td>
+              <td>{calcs ? calcs.final : null}</td>
+              {/* {calcs.map((element)=>( */}
+              {/*  <td key={element.id}>{element.average}</td> */}
+              {/* ))} */}
+              {/* {calcs.map((element)=>( */}
+              {/*  <td key={element.id}>{element.isexam}</td> */}
+              {/* ))} */}
+              {/* {calcs.map((element)=>( */}
+              {/*  <td key={element.id}>{element.exam}</td> */}
+              {/* ))} */}
+              {/* {calcs.map((element)=>( */}
+              {/*  <td key={element.id}>{element.final}</td> */}
+              {/* ))} */}
             </tr>
           </tbody>
         </Table>
