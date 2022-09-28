@@ -22,11 +22,10 @@ export const getAllExams = async (req, res) => {
   }
 }
 
-
-
 export const getExamsBySubjectId = async (req, res) => {
-  let text = 'SELECT * FROM grade WHERE id_subject = $1 AND rut_student = $2 AND exam = true'
-  let value = [req.params.id_subject,req.params.rut_student]
+  let text =
+    'SELECT * FROM grade WHERE id_subject = $1 AND rut_student = $2 AND exam = true'
+  let value = [req.params.id_subject, req.params.rut_student]
   try {
     const result = await client.query(text, value)
     if (result.rows.length <= 0) {
@@ -60,7 +59,34 @@ export const postExam = async (req, res) => {
     })
     return
   }
-
+  // chequear que el avg sea el suficiente para eximirsse
+  let textAVG =
+    'SELECT * FROM grade WHERE rut_student = $1 AND id_subject = $2 AND exam IS false'
+  let valueAVG = [req.body.rut_student, req.body.id_subject]
+  try {
+    let query = await client.query(textAVG, valueAVG)
+    let avg = 0
+    let sum = 0
+    query.rows.map((r) => {
+      sum = sum + r.grade
+    })
+    avg = sum / query.rows.length
+    if (avg > 60) {
+      res.status(400)
+      res.json({
+        message: 'student is eximido men',
+        variant: 'warning',
+      })
+      return
+    }
+  } catch (error) {
+      res.status(500)
+      res.json({
+        message: 'internal server error',
+        variant: 'danger',
+      })
+    return
+  }
   // chequear cantidad de notas
   let textCheck =
     'SELECT * FROM grade WHERE rut_student = $1 AND id_subject = $2 AND exam IS true'
